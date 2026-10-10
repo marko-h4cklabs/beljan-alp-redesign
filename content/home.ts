@@ -76,13 +76,13 @@ export const work = {
       caption: "Rad u krošnji",
     },
     {
-      image: "/images/home/work-05-tehnika-rusenja.png",
+      image: "/images/home/work-05-tehnika-rusenja.jpg",
       alt: "Tehnika rušenja",
       tag: "OREZIVANJE DRVEĆA",
       caption: "Tehnika rušenja",
     },
     {
-      image: "/images/home/work-06-zimsko-orezivanje.png",
+      image: "/images/home/work-06-zimsko-orezivanje.jpg",
       alt: "Zimsko orezivanje",
       tag: "OREZIVANJE DRVEĆA",
       caption: "Zimsko orezivanje",
@@ -101,7 +101,7 @@ export const about = {
     "Zato nam se obratite s povjerenjem i učinite vašu okućnicu sigurnijom i uređenom po vašoj želji.",
   ],
   image: {
-    src: "/images/home/about-alfonz-beljan.png",
+    src: "/images/home/about-alfonz-beljan.jpg",
     alt: "Alfonz Beljan - stručnjak za rušenje drveća",
   },
 };
