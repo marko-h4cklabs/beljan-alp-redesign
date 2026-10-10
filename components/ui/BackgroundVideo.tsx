@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 type NetworkInformation = { saveData?: boolean };
 
@@ -111,6 +111,26 @@ export function BackgroundVideo({ srcMp4, srcMp4Mobile, poster, alt, priority }:
     }
   }
 
+  // Attached natively (not via React's onPlaying prop) because with a tiny
+  // local/cached video file, playback can start fast enough that the
+  // "playing" event fires before this effect's listener is attached on a
+  // fresh mount — so we also check the already-playing case directly,
+  // rather than relying on catching the event itself.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!shouldPlay || !video) return;
+
+    function reveal() {
+      setVideoPlaying(true);
+    }
+
+    if (!video.paused && video.readyState >= 3) {
+      reveal();
+    }
+    video.addEventListener("playing", reveal);
+    return () => video.removeEventListener("playing", reveal);
+  }, [shouldPlay, activeSrc]);
+
   return (
     <div className="absolute inset-0 overflow-hidden">
       <Image src={poster} alt={alt} fill priority={priority} className="object-cover" />
@@ -124,7 +144,6 @@ export function BackgroundVideo({ srcMp4, srcMp4Mobile, poster, alt, priority }:
           loop
           playsInline
           preload="metadata"
-          onPlaying={() => setVideoPlaying(true)}
           className="absolute inset-0 h-full w-full object-cover transition-opacity duration-700"
           style={{ opacity: videoPlaying ? 1 : 0 }}
         >

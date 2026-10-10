@@ -35,18 +35,21 @@ to build the layout against; a pass to re-compress them is part of step 6
 
 | Page / section | File | Spec | Status |
 |---|---|---|---|
-| `/` hero background (desktop) | `/public/videos/hero.mp4` | 1920×1080, H.264, no audio | ❌ **not found** — expected here but the file isn't in the repo; see note below |
-| `/` hero background (mobile, ≤767px viewport or save-data) | `/public/videos/hero-mobile.mp4` | 1280×720, H.264, no audio | ❌ **not found** — same as above |
-| `/` hero poster (LCP image; shown immediately, video fades in once playing) | `/public/images/hero-poster.jpg` | 1920×1080 | ⏳ placeholder — temporarily a copy of `work-01-rusenje-visokog-stabla.jpg` until the real poster is in place |
+| `/` hero background (desktop) | `/public/videos/hero.mp4` | 1280×720, H.264, 30fps, no audio, 10s loop, CRF 30 | ✅ uploaded (1.7 MB) |
+| `/` hero background (mobile, ≤767px viewport or save-data) | `/public/videos/hero-mobile.mp4` | 960×540, H.264, 30fps, no audio, 10s loop, CRF 32 | ✅ uploaded (684 KB) |
+| `/` hero poster (LCP image; shown immediately, video fades in once playing) | `/public/images/hero-poster.jpg` | 1280×720 | ✅ uploaded (149 KB) — extracted frame from the real video |
 | `/` "Zašto odabrati baš nas?" background | `/public/videos/home-why-us-bg.mp4` | ≤ 2.5 MB, 1920×1080, H.264, no audio | ❌ **waiting on you** — not yet provided |
 | `/` "Zašto odabrati baš nas?" poster | `/public/videos/home-why-us-poster.jpg` | 1920×1080 | ⏳ placeholder — currently a copy of `work-04-rad-u-krosnji.jpg` |
 
-**Hero video note:** you said you'd added `public/videos/hero.mp4`, `public/videos/hero-mobile.mp4`, and
-`public/images/hero-poster.jpg`, but none of the three are actually in the repo —
-confirmed with `ls`/`find`. The component code, source-selection logic (mobile vs.
-desktop, poster-as-LCP, fade-in-on-ready) is fully built and wired to these exact
-paths/filenames, so dropping the real files in will make them work with no further
-code changes. See the chat for the file-location question this raised.
+**Hero video provenance:** the source you pointed me to
+(`~/Desktop/beljan-website/hero-video/hero-video.mp4`, 36 MB, 1280×720, 60fps, 18.6s,
+with audio) actually contains two different scenes — 0–8s is a cemetery (crane truck
+trimming trees between rows of gravestones), 8–18.6s is a worker climbing a bare tree
+right next to an apartment building. Per your call, the hero loop uses only the
+apartment-building segment (trimmed to the 8.6s–18.6s range, cut mid-transition-blur
+on the cemetery side to avoid it). Re-encoded at 30fps (from 60), stripped audio, and
+compressed with x264 — all three files are under the 20 MB git threshold by a wide
+margin, so no Git LFS/external storage discussion was needed this time.
 
 ## Legal
 
