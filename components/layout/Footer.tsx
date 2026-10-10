@@ -37,7 +37,7 @@ export function Footer() {
                 alt="Vrtna oaza Beljan logo"
                 width={1920}
                 height={1886}
-                className="h-12 w-12"
+                className="h-12 w-12 brightness-0 invert"
               />
               <span className="font-display text-xl font-semibold">{business.name}</span>
             </div>

@@ -25,7 +25,7 @@ export function Header() {
 
   // Close the mobile drawer whenever the viewport grows back to desktop size.
   useEffect(() => {
-    const mq = window.matchMedia("(min-width: 768px)");
+    const mq = window.matchMedia("(min-width: 1024px)");
     function handle(e: MediaQueryListEvent) {
       if (e.matches) setMenuOpen(false);
     }
@@ -51,27 +51,38 @@ export function Header() {
             alt="Vrtna oaza Beljan logo"
             width={1920}
             height={1886}
-            className="h-9 w-9 sm:h-10 sm:w-10"
+            className={clsx(
+              "h-9 w-9 transition sm:h-10 sm:w-10",
+              !scrolled && "brightness-0 invert",
+            )}
             priority
           />
-          <span className="font-display text-lg font-semibold tracking-tight text-forest sm:text-xl">
+          <span
+            className={clsx(
+              "font-display text-lg font-semibold tracking-tight transition-colors sm:text-xl",
+              scrolled ? "text-forest" : "text-cream",
+            )}
+          >
             Vrtna oaza Beljan
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav className="hidden items-center gap-8 lg:flex">
           {navLinks.map((link) => (
             <NavLink
               key={link.href}
               href={link.href}
-              className="font-sans text-sm font-medium text-ink-soft transition-colors hover:text-forest"
+              className={clsx(
+                "font-sans text-sm font-medium transition-colors",
+                scrolled ? "text-ink-soft hover:text-forest" : "text-cream/90 hover:text-cream",
+              )}
             >
               {link.label}
             </NavLink>
           ))}
         </nav>
 
-        <div className="hidden md:block">
+        <div className="hidden lg:block">
           <NavLink
             href={ctaLink.href}
             className="rounded-pill bg-forest px-5 py-2.5 font-sans text-sm font-semibold text-cream shadow-soft transition-transform hover:scale-[1.02] active:scale-[0.98]"
@@ -85,7 +96,10 @@ export function Header() {
           aria-label="Toggle menu"
           aria-expanded={menuOpen}
           onClick={() => setMenuOpen((v) => !v)}
-          className="flex h-10 w-10 items-center justify-center rounded-full text-forest md:hidden"
+          className={clsx(
+            "flex h-10 w-10 items-center justify-center rounded-full transition-colors lg:hidden",
+            scrolled || menuOpen ? "text-forest" : "text-cream",
+          )}
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             {menuOpen ? (
@@ -114,7 +128,7 @@ export function Header() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: reduceMotion ? 0 : -8 }}
             transition={{ duration: 0.2, ease: ease.out }}
-            className="border-t border-sage/20 bg-cream px-5 pb-6 pt-4 shadow-soft md:hidden"
+            className="border-t border-sage/20 bg-cream px-5 pb-6 pt-4 shadow-soft lg:hidden"
           >
             <ul className="flex flex-col gap-1">
               {navLinks.map((link) => (

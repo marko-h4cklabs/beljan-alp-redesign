@@ -35,8 +35,10 @@ to build the layout against; a pass to re-compress them is part of step 6
 
 | Page / section | File (`/public/videos/...`) | Spec | Status |
 |---|---|---|---|
-| `/` hero background | `home-hero-bg.mp4` + `.webm` + `home-hero-poster.jpg` | ≤ 4 MB, 1920×1080, H.264/VP9, no audio | ❌ **waiting on you** — drop the downloaded original in `_inventory/media/home-hero-bg.mp4` and flag it; we'll compress/convert from there |
-| `/` "Zašto odabrati baš nas?" background | `home-why-us-bg.mp4` + `.webm` + `home-why-us-poster.jpg` | ≤ 2.5 MB, 1920×1080, H.264/VP9, no audio | ❌ **waiting on you** — same as above |
+| `/` hero background | `home-hero-bg.mp4` + `.webm` | ≤ 4 MB, 1920×1080, H.264/VP9, no audio | ❌ **waiting on you** — drop the downloaded original in `_inventory/media/home-hero-bg.mp4` and flag it; we'll compress/convert from there |
+| `/` hero poster (fallback image shown until the video above exists / loads, and for reduced-motion & save-data visitors) | `home-hero-poster.jpg` | 1920×1080 | ⏳ placeholder — currently a copy of `work-01-rusenje-visokog-stabla.jpg`; will be replaced with a real extracted first-frame once the video is in |
+| `/` "Zašto odabrati baš nas?" background | `home-why-us-bg.mp4` + `.webm` | ≤ 2.5 MB, 1920×1080, H.264/VP9, no audio | ❌ **waiting on you** — same as above |
+| `/` "Zašto odabrati baš nas?" poster | `home-why-us-poster.jpg` | 1920×1080 | ⏳ placeholder — currently a copy of `work-04-rad-u-krosnji.jpg` |
 
 ## Legal
 
