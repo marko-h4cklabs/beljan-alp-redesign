@@ -6,6 +6,14 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.resolve(import.meta.dirname),
   },
+  images: {
+    // Stopgap: the Vercel team's image-optimization quota is currently
+    // exhausted (every /_next/image request 402s in production). This
+    // serves original files directly instead — larger payloads, no
+    // automatic AVIF/WebP/resizing, but images actually load. Revert once
+    // the Vercel plan/quota is sorted (see chat).
+    unoptimized: true,
+  },
 };
 
 export default nextConfig;
