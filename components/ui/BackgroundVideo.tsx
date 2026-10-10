@@ -5,54 +5,99 @@ import { useRef, useState, useSyncExternalStore } from "react";
 
 type NetworkInformation = { saveData?: boolean };
 
-function getShouldPlaySnapshot(): boolean {
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const nav = navigator as Navigator & { connection?: NetworkInformation };
-  const saveData = nav.connection?.saveData === true;
-  return !reduceMotion && !saveData;
+function getReduceMotion(): boolean {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
-
-function getShouldPlayServerSnapshot(): boolean {
-  // Unknown on the server — default to the poster (no video request) until
-  // the client upgrades this on first paint, matching the "no video on
-  // reduced-motion/save-data" rule for the common case where we can't tell.
+function getReduceMotionServer(): boolean {
   return false;
 }
-
-function subscribeToMotionPreference(callback: () => void) {
+function subscribeReduceMotion(callback: () => void) {
   const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
   mq.addEventListener("change", callback);
   return () => mq.removeEventListener("change", callback);
 }
 
+function getSaveData(): boolean {
+  const nav = navigator as Navigator & { connection?: NetworkInformation };
+  return nav.connection?.saveData === true;
+}
+function getSaveDataServer(): boolean {
+  return false;
+}
+function subscribeSaveData(callback: () => void) {
+  const nav = navigator as Navigator & { connection?: EventTarget };
+  nav.connection?.addEventListener?.("change", callback);
+  return () => nav.connection?.removeEventListener?.("change", callback);
+}
+
+const MOBILE_QUERY = "(max-width: 767px)";
+
+function getIsMobileViewport(): boolean {
+  return window.matchMedia(MOBILE_QUERY).matches;
+}
+function getIsMobileViewportServer(): boolean {
+  return false;
+}
+function subscribeViewport(callback: () => void) {
+  const mq = window.matchMedia(MOBILE_QUERY);
+  mq.addEventListener("change", callback);
+  return () => mq.removeEventListener("change", callback);
+}
+
 type BackgroundVideoProps = {
+  /** Desktop/default source. */
   srcMp4: string;
-  srcWebm?: string;
+  /** Smaller source served at <=767px viewport width, or under save-data
+   * (falls back to `srcMp4` for both if omitted). */
+  srcMp4Mobile?: string;
   poster: string;
-  /** Alt text used only for the reduced-motion/save-data image fallback. */
+  /** Alt text used for the poster image. */
   alt: string;
   priority?: boolean;
 };
 
 /**
- * Full-bleed autoplay/loop/muted background video with a poster-image
- * fallback — used for the same effect a missing/not-yet-uploaded video file
- * also produces (the <video> element just shows its poster if the src
- * 404s), so this works correctly before the real .mp4/.webm are dropped in.
+ * Full-bleed autoplay/loop/muted background video. The poster is always
+ * rendered as a real `next/image` (so it gets Next's LCP preload treatment
+ * regardless of which branch below is active) and the video — once a
+ * source is actually chosen — fades in on top only once it reports
+ * `onPlaying`, so there's never a blank/black flash while it buffers; the
+ * poster stays the visible/paintable layer the whole time.
  *
- * Skips loading the video entirely under `prefers-reduced-motion: reduce`
- * or `navigator.connection.saveData`, serving the poster as a static image
- * instead. Includes a small pause/play control per WCAG 2.2.2 (auto-playing
- * content should be user-pausable).
+ * Skips the video entirely under `prefers-reduced-motion: reduce` or
+ * `navigator.connection.saveData` (poster-only). Otherwise picks the
+ * smaller `srcMp4Mobile` at <=767px viewport width or under save-data, the
+ * full `srcMp4` otherwise. Includes a pause/play control (WCAG 2.2.2).
+ *
+ * All three checks use `useSyncExternalStore` with a server snapshot that
+ * always matches the client's first paint, so there's no hydration
+ * mismatch — these only update to their real values on a normal
+ * post-hydration re-render.
  */
-export function BackgroundVideo({ srcMp4, srcWebm, poster, alt, priority }: BackgroundVideoProps) {
-  const shouldPlay = useSyncExternalStore(
-    subscribeToMotionPreference,
-    getShouldPlaySnapshot,
-    getShouldPlayServerSnapshot,
-  );
+export function BackgroundVideo({ srcMp4, srcMp4Mobile, poster, alt, priority }: BackgroundVideoProps) {
+  const reduceMotion = useSyncExternalStore(subscribeReduceMotion, getReduceMotion, getReduceMotionServer);
+  const saveData = useSyncExternalStore(subscribeSaveData, getSaveData, getSaveDataServer);
+  const isMobileViewport = useSyncExternalStore(subscribeViewport, getIsMobileViewport, getIsMobileViewportServer);
+
+  const shouldPlay = !reduceMotion && !saveData;
+  const useMobileSource = isMobileViewport || saveData;
+  const activeSrc = (useMobileSource && srcMp4Mobile) || srcMp4;
+
+  const [videoPlaying, setVideoPlaying] = useState(false);
   const [paused, setPaused] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  // If the active source changes (e.g. resizing across the mobile
+  // breakpoint while already playing), reset the "ready to reveal" state
+  // for the new <video> element instead of immediately showing it at full
+  // opacity before it can actually play. Adjusting state during render
+  // (rather than in an effect) per the source-changed-from-last-render
+  // comparison below is the React-documented way to do this safely.
+  const [trackedSrc, setTrackedSrc] = useState(activeSrc);
+  if (activeSrc !== trackedSrc) {
+    setTrackedSrc(activeSrc);
+    setVideoPlaying(false);
+  }
 
   function togglePause() {
     const video = videoRef.current;
@@ -68,22 +113,23 @@ export function BackgroundVideo({ srcMp4, srcWebm, poster, alt, priority }: Back
 
   return (
     <div className="absolute inset-0 overflow-hidden">
-      {shouldPlay ? (
+      <Image src={poster} alt={alt} fill priority={priority} className="object-cover" />
+
+      {shouldPlay && (
         <video
+          key={activeSrc}
           ref={videoRef}
           autoPlay
           muted
           loop
           playsInline
           preload="metadata"
-          poster={poster}
-          className="h-full w-full object-cover"
+          onPlaying={() => setVideoPlaying(true)}
+          className="absolute inset-0 h-full w-full object-cover transition-opacity duration-700"
+          style={{ opacity: videoPlaying ? 1 : 0 }}
         >
-          {srcWebm && <source src={srcWebm} type="video/webm" />}
-          <source src={srcMp4} type="video/mp4" />
+          <source src={activeSrc} type="video/mp4" />
         </video>
-      ) : (
-        <Image src={poster} alt={alt} fill priority={priority} className="object-cover" />
       )}
 
       {shouldPlay && (

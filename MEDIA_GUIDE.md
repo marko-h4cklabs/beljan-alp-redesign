@@ -33,12 +33,20 @@ to build the layout against; a pass to re-compress them is part of step 6
 
 ## Videos
 
-| Page / section | File (`/public/videos/...`) | Spec | Status |
+| Page / section | File | Spec | Status |
 |---|---|---|---|
-| `/` hero background | `home-hero-bg.mp4` + `.webm` | ≤ 4 MB, 1920×1080, H.264/VP9, no audio | ❌ **waiting on you** — drop the downloaded original in `_inventory/media/home-hero-bg.mp4` and flag it; we'll compress/convert from there |
-| `/` hero poster (fallback image shown until the video above exists / loads, and for reduced-motion & save-data visitors) | `home-hero-poster.jpg` | 1920×1080 | ⏳ placeholder — currently a copy of `work-01-rusenje-visokog-stabla.jpg`; will be replaced with a real extracted first-frame once the video is in |
-| `/` "Zašto odabrati baš nas?" background | `home-why-us-bg.mp4` + `.webm` | ≤ 2.5 MB, 1920×1080, H.264/VP9, no audio | ❌ **waiting on you** — same as above |
-| `/` "Zašto odabrati baš nas?" poster | `home-why-us-poster.jpg` | 1920×1080 | ⏳ placeholder — currently a copy of `work-04-rad-u-krosnji.jpg` |
+| `/` hero background (desktop) | `/public/videos/hero.mp4` | 1920×1080, H.264, no audio | ❌ **not found** — expected here but the file isn't in the repo; see note below |
+| `/` hero background (mobile, ≤767px viewport or save-data) | `/public/videos/hero-mobile.mp4` | 1280×720, H.264, no audio | ❌ **not found** — same as above |
+| `/` hero poster (LCP image; shown immediately, video fades in once playing) | `/public/images/hero-poster.jpg` | 1920×1080 | ⏳ placeholder — temporarily a copy of `work-01-rusenje-visokog-stabla.jpg` until the real poster is in place |
+| `/` "Zašto odabrati baš nas?" background | `/public/videos/home-why-us-bg.mp4` | ≤ 2.5 MB, 1920×1080, H.264, no audio | ❌ **waiting on you** — not yet provided |
+| `/` "Zašto odabrati baš nas?" poster | `/public/videos/home-why-us-poster.jpg` | 1920×1080 | ⏳ placeholder — currently a copy of `work-04-rad-u-krosnji.jpg` |
+
+**Hero video note:** you said you'd added `public/videos/hero.mp4`, `public/videos/hero-mobile.mp4`, and
+`public/images/hero-poster.jpg`, but none of the three are actually in the repo —
+confirmed with `ls`/`find`. The component code, source-selection logic (mobile vs.
+desktop, poster-as-LCP, fade-in-on-ready) is fully built and wired to these exact
+paths/filenames, so dropping the real files in will make them work with no further
+code changes. See the chat for the file-location question this raised.
 
 ## Legal
 

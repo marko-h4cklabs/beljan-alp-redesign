@@ -9,7 +9,6 @@ export function WhyUs() {
     <section className="relative overflow-hidden bg-forest-dark text-cream">
       <BackgroundVideo
         srcMp4={whyUs.videoSrc}
-        srcWebm={whyUs.videoSrcWebm}
         poster={whyUs.poster}
         alt="Alpinistički rad na stablu"
       />

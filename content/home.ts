@@ -4,9 +4,9 @@ export const hero = {
   headingLine1: "Alpinističko rušenje",
   headingLine2: "teško dostupnog drveća",
   cta: "Kontaktirajte nas",
-  videoSrc: "/videos/home-hero-bg.mp4",
-  videoSrcWebm: "/videos/home-hero-bg.webm",
-  poster: "/videos/home-hero-poster.jpg",
+  videoSrc: "/videos/hero.mp4",
+  videoSrcMobile: "/videos/hero-mobile.mp4",
+  poster: "/images/hero-poster.jpg",
 };
 
 export const intro = {
@@ -151,7 +151,6 @@ export const whyUs = {
     "Potrudit ćemo se da posao obavimo što brže kako bismo Vam uštedjeli vrijeme",
   ],
   videoSrc: "/videos/home-why-us-bg.mp4",
-  videoSrcWebm: "/videos/home-why-us-bg.webm",
   poster: "/videos/home-why-us-poster.jpg",
 };
 

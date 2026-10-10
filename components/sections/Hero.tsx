@@ -39,16 +39,18 @@ export function Hero() {
     >
       <BackgroundVideo
         srcMp4={hero.videoSrc}
-        srcWebm={hero.videoSrcWebm}
+        srcMp4Mobile={hero.videoSrcMobile}
         poster={hero.poster}
         alt="Alpinističko rušenje teško dostupnog drveća"
         priority
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-forest-dark via-forest-dark/60 to-forest-dark/20" />
+      <div className="absolute inset-0 bg-gradient-to-t from-forest-dark/95 via-forest-dark/65 to-forest-dark/25" />
       {/* Keeps the transparent header legible over bright video/poster
           frames regardless of scroll state — independent of the gradient
-          above, which is tuned for the headline block lower down. */}
-      <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/50 to-transparent" />
+          above, which is tuned for the headline block lower down. Widened
+          and darkened slightly as a safety margin against real footage,
+          which can be brighter at the very top than the placeholder. */}
+      <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/60 to-transparent" />
 
       <motion.div
         initial="hidden"
