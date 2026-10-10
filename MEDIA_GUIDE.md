@@ -14,24 +14,24 @@ re-optimizing it. No code changes needed.
 | Page / section | File (`/public/images/...`) | Dimensions (max long edge) | Status |
 |---|---|---|---|
 | Header & footer (all pages), `/izbornik` (large) | `shared/logo-badge.png` | 600×589 | ✅ compressed (57 KB, was 374 KB at native 1920×1886) |
-| `/` work gallery #1 | `home/work-01-rusenje-visokog-stabla.jpg` | 1200px | ✅ compressed (229 KB) |
-| `/` work gallery #2 · reused on `/galerija` as "Uklanjanje Stabla" | `home/work-02-rad-na-visini.jpg` | 1200px | ✅ compressed (210 KB) |
-| `/` work gallery #3 · reused on `/galerija` as "Visinski Rad" | `home/work-03-alpinisticko-rusenje.jpg` | 1200px | ✅ compressed (145 KB) |
-| `/` work gallery #4 | `home/work-04-rad-u-krosnji.jpg` | 1200px | ✅ compressed (241 KB) |
-| `/` work gallery #5 | `home/work-05-tehnika-rusenja.jpg` | 1200px | ✅ compressed (74 KB) — converted from PNG |
-| `/` work gallery #6 | `home/work-06-zimsko-orezivanje.jpg` | 1200px | ✅ compressed (171 KB) — converted from PNG |
-| `/` about section | `home/about-alfonz-beljan.jpg` | 1200px | ✅ compressed (73 KB) — converted from PNG |
-| `/galerija` #1 | `gallery/07-rad-s-dizalicom.jpg` | 1200px | ✅ compressed (161 KB) |
-| `/galerija` #2 | `gallery/08-penjanje-na-smreku.jpg` | 1200px | ✅ compressed (69 KB) |
-| `/galerija` #3 | `gallery/09-rusenje-breze.jpg` | 1200px | ✅ compressed (75 KB) |
-| `/galerija` #4 | `gallery/10-rad-u-krosnji.jpg` | 1200px | ✅ compressed (117 KB) |
+| `/` work gallery #1 | `home/work-01-rusenje-visokog-stabla.jpg` | 1000px | ✅ compressed (137 KB) |
+| `/` work gallery #2 · reused on `/galerija` as "Uklanjanje Stabla" | `home/work-02-rad-na-visini.jpg` | 1000px | ✅ compressed (124 KB) |
+| `/` work gallery #3 · reused on `/galerija` as "Visinski Rad" | `home/work-03-alpinisticko-rusenje.jpg` | 1000px | ✅ compressed (90 KB) |
+| `/` work gallery #4 | `home/work-04-rad-u-krosnji.jpg` | 1000px | ✅ compressed (142 KB) |
+| `/` work gallery #5 | `home/work-05-tehnika-rusenja.jpg` | 1000px | ✅ compressed (57 KB) — converted from PNG |
+| `/` work gallery #6 | `home/work-06-zimsko-orezivanje.jpg` | 1000px | ✅ compressed (133 KB) — converted from PNG |
+| `/` about section | `home/about-alfonz-beljan.jpg` | 1000px | ✅ compressed (56 KB) — converted from PNG |
+| `/galerija` #1 | `gallery/07-rad-s-dizalicom.jpg` | 1000px | ✅ compressed (97 KB) |
+| `/galerija` #2 | `gallery/08-penjanje-na-smreku.jpg` | 1000px | ✅ compressed (53 KB) |
+| `/galerija` #3 | `gallery/09-rusenje-breze.jpg` | 1000px | ✅ compressed (45 KB) |
+| `/galerija` #4 | `gallery/10-rad-u-krosnji.jpg` | 1000px | ✅ compressed (73 KB) |
 
-All resized to a 1200px long-edge cap (ample for 2–3x retina at the sizes they're
+All resized to a 1000px long-edge cap (ample for 2–3x retina at the sizes they're
 actually displayed — none of these render wider than ~500px in any layout) and
-re-encoded as mozjpeg quality 75/progressive. The two PNG photos were converted to JPG
-(no transparency needed). Combined, these 12 files dropped from ~3.5 MB to ~1.6 MB with
-no visible quality loss. Originals are preserved untouched in `_inventory/media/` if
-higher-resolution versions are ever needed.
+re-encoded as mozjpeg quality 68/progressive. The two PNG photos were converted to JPG
+(no transparency needed). Combined, these 11 files dropped from ~3.5 MB to ~1.0 MB with
+no visible quality loss (spot-checked at full size). Originals are preserved untouched
+in `_inventory/media/` if higher-resolution versions are ever needed.
 
 **Note on `next/image` optimization:** currently disabled (`images.unoptimized: true`
 in `next.config.ts`) as a stopgap for a Vercel account/plan image-optimization quota
