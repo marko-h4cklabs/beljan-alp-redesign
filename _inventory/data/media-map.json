@@ -1,0 +1,82 @@
+[
+  {
+    "file": "logo-badge.png",
+    "url": "https://www.beljan-alp.com/assets/logo-new-BwO5iOG9.png",
+    "note": "Header/footer circular logo (monogram B)"
+  },
+  {
+    "file": "home-hero-bg.mp4",
+    "url": "https://agzshlajheodpkbpvhfe.supabase.co/storage/v1/object/public/hero-videos/hero-bg.mp4",
+    "note": "Homepage hero background video, autoplay/loop/muted"
+  },
+  {
+    "file": "home-why-us-bg.mp4",
+    "url": "https://agzshlajheodpkbpvhfe.supabase.co/storage/v1/object/public/hero-videos/why-us.mp4",
+    "note": "Homepage \"Zašto odabrati baš nas?\" section background video"
+  },
+  {
+    "file": "home-work-01-rusenje-visokog-stabla.jpg",
+    "url": "https://www.beljan-alp.com/assets/gallery-1-BF19jCsE.jpg",
+    "note": "Naši radovi: Rušenje visokog stabla (RUŠENJE DRVEĆA)"
+  },
+  {
+    "file": "home-work-02-rad-na-visini.jpg",
+    "url": "https://www.beljan-alp.com/assets/gallery-2-iImq91EZ.jpg",
+    "note": "Naši radovi: Rad na visini (RUŠENJE DRVEĆA)"
+  },
+  {
+    "file": "home-work-03-alpinisticko-rusenje.jpg",
+    "url": "https://www.beljan-alp.com/assets/gallery-3-BrZurbg-.jpg",
+    "note": "Naši radovi: Alpinističko rušenje (SKRAĆIVANJE KROŠNJE)"
+  },
+  {
+    "file": "home-work-04-rad-u-krosnji.jpg",
+    "url": "https://www.beljan-alp.com/assets/gallery-4-D7HJWbDf.jpg",
+    "note": "Naši radovi: Rad u krošnji (RUŠENJE DRVEĆA)"
+  },
+  {
+    "file": "home-work-05-tehnika-rusenja.png",
+    "url": "https://www.beljan-alp.com/assets/gallery-5-COkCXLBF.png",
+    "note": "Naši radovi: Tehnika rušenja (OREZIVANJE DRVEĆA)"
+  },
+  {
+    "file": "home-work-06-zimsko-orezivanje.png",
+    "url": "https://www.beljan-alp.com/assets/gallery-6-BINu3ObA.png",
+    "note": "Naši radovi: Zimsko orezivanje"
+  },
+  {
+    "file": "about-alfonz-beljan.png",
+    "url": "https://www.beljan-alp.com/assets/about-worker-CEdicxrv.png",
+    "note": "O nama: Alfonz Beljan - stručnjak za rušenje drveća"
+  },
+  {
+    "file": "gallery-07-rad-s-dizalicom.jpg",
+    "url": "https://www.beljan-alp.com/assets/gallery-7-BeMAy4UG.jpg",
+    "note": "Galerija: Rad s Dizalicom (RUŠENJE DRVEĆA)"
+  },
+  {
+    "file": "gallery-08-penjanje-na-smreku.jpg",
+    "url": "https://www.beljan-alp.com/assets/gallery-8-DBbT5QLG.jpg",
+    "note": "Galerija: Penjanje na Smreku (ALPINISTIČKO RUŠENJE)"
+  },
+  {
+    "file": "gallery-09-rusenje-breze.jpg",
+    "url": "https://www.beljan-alp.com/assets/gallery-9-16lXRLlP.jpg",
+    "note": "Galerija: Rušenje Breze (RUŠENJE DRVEĆA)"
+  },
+  {
+    "file": "gallery-10-rad-u-krosnji.jpg",
+    "url": "https://www.beljan-alp.com/assets/gallery-10-Bdu4z-Su.jpg",
+    "note": "Galerija: Rad u Krošnji (RUŠENJE DRVEĆA)"
+  },
+  {
+    "file": "politika-privatnosti.pdf",
+    "url": "https://agzshlajheodpkbpvhfe.supabase.co/storage/v1/object/public/documents/politika-privatnosti.pdf",
+    "note": "Privacy policy PDF linked from footer"
+  },
+  {
+    "file": "favicon.ico",
+    "url": "https://www.beljan-alp.com/favicon.ico",
+    "note": "Favicon"
+  }
+]
