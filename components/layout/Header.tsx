@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import clsx from "clsx";
@@ -10,9 +11,18 @@ import { ease } from "@/lib/motion";
 import { NavLink } from "./NavLink";
 
 export function Header() {
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const reduceMotion = useReducedMotion();
+
+  // Only the homepage has a full-bleed dark hero behind the header, which is
+  // what the transparent/light-text treatment is for. Every other route
+  // starts with a plain cream background, so the header must render solid
+  // there from the very top of the page — otherwise light text on a light
+  // page background is unreadable.
+  const isHomepage = pathname === "/";
+  const solid = !isHomepage || scrolled;
 
   useEffect(() => {
     function onScroll() {
@@ -35,10 +45,10 @@ export function Header() {
 
   return (
     <header
-      data-scrolled={scrolled}
+      data-scrolled={solid}
       className={clsx(
         "fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,padding] duration-300",
-        scrolled
+        solid
           ? "bg-cream/90 shadow-soft backdrop-blur-sm"
           : "bg-cream/0",
       )}
@@ -53,14 +63,14 @@ export function Header() {
             height={1886}
             className={clsx(
               "h-9 w-9 transition sm:h-10 sm:w-10",
-              !scrolled && "brightness-0 invert",
+              !solid && "brightness-0 invert",
             )}
             priority
           />
           <span
             className={clsx(
               "font-display text-lg font-semibold tracking-tight transition-colors sm:text-xl",
-              scrolled ? "text-forest" : "text-cream",
+              solid ? "text-forest" : "text-cream",
             )}
           >
             Vrtna oaza Beljan
@@ -74,7 +84,7 @@ export function Header() {
               href={link.href}
               className={clsx(
                 "font-sans text-sm font-medium transition-colors",
-                scrolled ? "text-ink-soft hover:text-forest" : "text-cream/90 hover:text-cream",
+                solid ? "text-ink-soft hover:text-forest" : "text-cream/90 hover:text-cream",
               )}
             >
               {link.label}
@@ -98,7 +108,7 @@ export function Header() {
           onClick={() => setMenuOpen((v) => !v)}
           className={clsx(
             "flex h-10 w-10 items-center justify-center rounded-full transition-colors lg:hidden",
-            scrolled || menuOpen ? "text-forest" : "text-cream",
+            solid || menuOpen ? "text-forest" : "text-cream",
           )}
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
