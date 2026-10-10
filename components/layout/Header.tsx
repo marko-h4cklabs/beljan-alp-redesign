@@ -59,8 +59,8 @@ export function Header() {
           <Image
             src="/images/shared/logo-badge.png"
             alt="Vrtna oaza Beljan logo"
-            width={1920}
-            height={1886}
+            width={40}
+            height={39}
             className={clsx(
               "h-9 w-9 transition sm:h-10 sm:w-10",
               !solid && "brightness-0 invert",

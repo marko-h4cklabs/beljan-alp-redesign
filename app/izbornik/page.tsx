@@ -17,8 +17,8 @@ export default function IzbornikPage() {
         <Image
           src="/images/shared/logo-badge.png"
           alt="Vrtna oaza Beljan logo"
-          width={1920}
-          height={1886}
+          width={160}
+          height={157}
           className="h-32 w-32 sm:h-40 sm:w-40"
           priority
         />

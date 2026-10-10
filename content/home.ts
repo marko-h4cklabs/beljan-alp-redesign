@@ -150,7 +150,10 @@ export const whyUs = {
     "Mogućnost rušenja alpinizmom ili košarom, ovisno o dostupnosti drveta i složenosti situacije",
     "Potrudit ćemo se da posao obavimo što brže kako bismo Vam uštedjeli vrijeme",
   ],
-  videoSrc: "/videos/home-why-us-bg.mp4",
+  // Not uploaded yet — omitted (rather than pointing at a 404) so
+  // BackgroundVideo renders poster-only with no failed request. Add this
+  // back once the real file lands at this path (see MEDIA_GUIDE.md).
+  // videoSrc: "/videos/home-why-us-bg.mp4",
   poster: "/videos/home-why-us-poster.jpg",
 };
 

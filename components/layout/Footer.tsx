@@ -28,8 +28,8 @@ export function Footer() {
               <Image
                 src="/images/shared/logo-badge.png"
                 alt="Vrtna oaza Beljan logo"
-                width={1920}
-                height={1886}
+                width={48}
+                height={47}
                 className="h-12 w-12 brightness-0 invert"
               />
               <span className="font-display text-xl font-semibold">{business.name}</span>

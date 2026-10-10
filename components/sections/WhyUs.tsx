@@ -7,11 +7,7 @@ import { whyUs } from "@/content/home";
 export function WhyUs() {
   return (
     <section className="relative overflow-hidden bg-forest-dark text-cream">
-      <BackgroundVideo
-        srcMp4={whyUs.videoSrc}
-        poster={whyUs.poster}
-        alt="Alpinistički rad na stablu"
-      />
+      <BackgroundVideo poster={whyUs.poster} alt="Alpinistički rad na stablu" />
       <div className="absolute inset-0 bg-forest-dark/75" />
 
       <div className="relative mx-auto max-w-3xl px-5 py-24 sm:px-8">

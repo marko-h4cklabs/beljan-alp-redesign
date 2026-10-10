@@ -30,25 +30,13 @@ function subscribeSaveData(callback: () => void) {
   return () => nav.connection?.removeEventListener?.("change", callback);
 }
 
-const MOBILE_QUERY = "(max-width: 767px)";
-
-function getIsMobileViewport(): boolean {
-  return window.matchMedia(MOBILE_QUERY).matches;
-}
-function getIsMobileViewportServer(): boolean {
-  return false;
-}
-function subscribeViewport(callback: () => void) {
-  const mq = window.matchMedia(MOBILE_QUERY);
-  mq.addEventListener("change", callback);
-  return () => mq.removeEventListener("change", callback);
-}
-
 type BackgroundVideoProps = {
-  /** Desktop/default source. */
-  srcMp4: string;
-  /** Smaller source served at <=767px viewport width, or under save-data
-   * (falls back to `srcMp4` for both if omitted). */
+  /** Desktop/default source. Omit entirely (rather than pointing at a file
+   * that doesn't exist yet) to render poster-only with no <video> at all —
+   * avoids a 404 request/console error for a pending upload. */
+  srcMp4?: string;
+  /** Smaller source served at <=767px viewport width (falls back to
+   * `srcMp4` for all viewports if omitted). */
   srcMp4Mobile?: string;
   poster: string;
   /** Alt text used for the poster image. */
@@ -59,45 +47,31 @@ type BackgroundVideoProps = {
 /**
  * Full-bleed autoplay/loop/muted background video. The poster is always
  * rendered as a real `next/image` (so it gets Next's LCP preload treatment
- * regardless of which branch below is active) and the video — once a
- * source is actually chosen — fades in on top only once it reports
- * `onPlaying`, so there's never a blank/black flash while it buffers; the
- * poster stays the visible/paintable layer the whole time.
+ * regardless of which branch below is active) and the video fades in on top
+ * only once it reports actually playing, so there's never a blank/black
+ * flash while it buffers — the poster stays the visible/paintable layer the
+ * whole time.
  *
  * Skips the video entirely under `prefers-reduced-motion: reduce` or
- * `navigator.connection.saveData` (poster-only). Otherwise picks the
- * smaller `srcMp4Mobile` at <=767px viewport width or under save-data, the
- * full `srcMp4` otherwise. Includes a pause/play control (WCAG 2.2.2).
+ * `navigator.connection.saveData` (poster-only; both are hydration-safe via
+ * `useSyncExternalStore`, server snapshot `false`, so there's no mismatch).
  *
- * All three checks use `useSyncExternalStore` with a server snapshot that
- * always matches the client's first paint, so there's no hydration
- * mismatch — these only update to their real values on a normal
- * post-hydration re-render.
+ * The mobile/desktop choice is delegated to the browser's own native
+ * `<source media="...">` resolution instead of a JS viewport check: picking
+ * it in JS means the server/first-hydration-paint has to guess (it can't
+ * know the real viewport), and the browser can already start fetching that
+ * guessed source before the hydration-safe correction lands — causing BOTH
+ * files to download. `<source media>` is resolved once, directly from the
+ * real viewport, before any JS runs at all, so there's no guess to correct.
  */
 export function BackgroundVideo({ srcMp4, srcMp4Mobile, poster, alt, priority }: BackgroundVideoProps) {
   const reduceMotion = useSyncExternalStore(subscribeReduceMotion, getReduceMotion, getReduceMotionServer);
   const saveData = useSyncExternalStore(subscribeSaveData, getSaveData, getSaveDataServer);
-  const isMobileViewport = useSyncExternalStore(subscribeViewport, getIsMobileViewport, getIsMobileViewportServer);
-
-  const shouldPlay = !reduceMotion && !saveData;
-  const useMobileSource = isMobileViewport || saveData;
-  const activeSrc = (useMobileSource && srcMp4Mobile) || srcMp4;
+  const shouldPlay = Boolean(srcMp4) && !reduceMotion && !saveData;
 
   const [videoPlaying, setVideoPlaying] = useState(false);
   const [paused, setPaused] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
-
-  // If the active source changes (e.g. resizing across the mobile
-  // breakpoint while already playing), reset the "ready to reveal" state
-  // for the new <video> element instead of immediately showing it at full
-  // opacity before it can actually play. Adjusting state during render
-  // (rather than in an effect) per the source-changed-from-last-render
-  // comparison below is the React-documented way to do this safely.
-  const [trackedSrc, setTrackedSrc] = useState(activeSrc);
-  if (activeSrc !== trackedSrc) {
-    setTrackedSrc(activeSrc);
-    setVideoPlaying(false);
-  }
 
   function togglePause() {
     const video = videoRef.current;
@@ -129,15 +103,14 @@ export function BackgroundVideo({ srcMp4, srcMp4Mobile, poster, alt, priority }:
     }
     video.addEventListener("playing", reveal);
     return () => video.removeEventListener("playing", reveal);
-  }, [shouldPlay, activeSrc]);
+  }, [shouldPlay]);
 
   return (
     <div className="absolute inset-0 overflow-hidden">
-      <Image src={poster} alt={alt} fill priority={priority} className="object-cover" />
+      <Image src={poster} alt={alt} fill sizes="100vw" priority={priority} className="object-cover" />
 
-      {shouldPlay && (
+      {shouldPlay && srcMp4 && (
         <video
-          key={activeSrc}
           ref={videoRef}
           autoPlay
           muted
@@ -147,7 +120,8 @@ export function BackgroundVideo({ srcMp4, srcMp4Mobile, poster, alt, priority }:
           className="absolute inset-0 h-full w-full object-cover transition-opacity duration-700"
           style={{ opacity: videoPlaying ? 1 : 0 }}
         >
-          <source src={activeSrc} type="video/mp4" />
+          {srcMp4Mobile && <source src={srcMp4Mobile} type="video/mp4" media="(max-width: 767px)" />}
+          <source src={srcMp4} type="video/mp4" />
         </video>
       )}
 
