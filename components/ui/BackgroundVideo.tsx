@@ -1,33 +1,26 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useReducedMotionSafe } from "@/lib/useReducedMotionSafe";
 
 type NetworkInformation = { saveData?: boolean };
 
-function getReduceMotion(): boolean {
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
-function getReduceMotionServer(): boolean {
-  return false;
-}
-function subscribeReduceMotion(callback: () => void) {
-  const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-  mq.addEventListener("change", callback);
-  return () => mq.removeEventListener("change", callback);
-}
-
-function getSaveData(): boolean {
-  const nav = navigator as Navigator & { connection?: NetworkInformation };
-  return nav.connection?.saveData === true;
-}
-function getSaveDataServer(): boolean {
-  return false;
-}
-function subscribeSaveData(callback: () => void) {
-  const nav = navigator as Navigator & { connection?: EventTarget };
-  nav.connection?.addEventListener?.("change", callback);
-  return () => nav.connection?.removeEventListener?.("change", callback);
+/** Same guaranteed-update approach as useReducedMotionSafe (see that file
+ * for why useSyncExternalStore alone isn't reliable here): starts `false`
+ * (matching SSR), corrects via an effect that's guaranteed to run once. */
+function useSaveDataSafe(): boolean {
+  const [saveData, setSaveData] = useState(false);
+  useEffect(() => {
+    const nav = navigator as Navigator & { connection?: NetworkInformation & EventTarget };
+    function sync() {
+      setSaveData(nav.connection?.saveData === true);
+    }
+    sync();
+    nav.connection?.addEventListener?.("change", sync);
+    return () => nav.connection?.removeEventListener?.("change", sync);
+  }, []);
+  return saveData;
 }
 
 type BackgroundVideoProps = {
@@ -53,8 +46,10 @@ type BackgroundVideoProps = {
  * whole time.
  *
  * Skips the video entirely under `prefers-reduced-motion: reduce` or
- * `navigator.connection.saveData` (poster-only; both are hydration-safe via
- * `useSyncExternalStore`, server snapshot `false`, so there's no mismatch).
+ * `navigator.connection.saveData` (poster-only; both start `false` to match
+ * SSR, then correct via a guaranteed post-mount effect — see
+ * useReducedMotionSafe for why plain useSyncExternalStore isn't reliable
+ * enough on its own for a value with no other reason to re-render).
  *
  * The mobile/desktop choice is delegated to the browser's own native
  * `<source media="...">` resolution instead of a JS viewport check: picking
@@ -65,8 +60,8 @@ type BackgroundVideoProps = {
  * real viewport, before any JS runs at all, so there's no guess to correct.
  */
 export function BackgroundVideo({ srcMp4, srcMp4Mobile, poster, alt, priority }: BackgroundVideoProps) {
-  const reduceMotion = useSyncExternalStore(subscribeReduceMotion, getReduceMotion, getReduceMotionServer);
-  const saveData = useSyncExternalStore(subscribeSaveData, getSaveData, getSaveDataServer);
+  const reduceMotion = useReducedMotionSafe();
+  const saveData = useSaveDataSafe();
   const shouldPlay = Boolean(srcMp4) && !reduceMotion && !saveData;
 
   const [videoPlaying, setVideoPlaying] = useState(false);
