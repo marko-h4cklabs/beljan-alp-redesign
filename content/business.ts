@@ -9,6 +9,7 @@ export const business = {
   ownerPrefixed: "vl. Alfonz Beljan",
   address: {
     street: "Železna Gora 166",
+    postalCode: "40313",
     city: "Železna Gora",
     region: "Međimurska županija",
     country: "HR",

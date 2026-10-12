@@ -62,13 +62,17 @@ export function Footer() {
               <p>
                 {business.address.street}
                 <br />
-                {business.address.city}
+                {business.address.postalCode} {business.address.city}
               </p>
 
-              <p>{business.phoneDisplay}</p>
+              <p>
+                {business.phoneDisplay}
+                <br />
+                {business.email}
+              </p>
 
               <p>
-                Matični broj: {business.maticniBroj}
+                MBO: {business.maticniBroj}
                 <br />
                 OIB: {business.oib}
               </p>

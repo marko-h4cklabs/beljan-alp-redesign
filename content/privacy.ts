@@ -42,7 +42,7 @@ export const privacy = {
           lines: [
             "Adresa: Železna Gora 166, 40313 Železna Gora",
             "OIB: 98109732423",
-            "MBS: 98952048",
+            "MBO: 98952048",
             "E-mail: vrtnaoazabeljan@gmail.com",
             "Telefon: 098 137 5774",
           ],
@@ -126,11 +126,8 @@ export const privacy = {
           items: [
             { strong: "pružatelj usluge smještaja web stranice (hosting):", text: " Vercel Inc.;" },
             {
-              // TODO(step 5): replace the bracketed placeholder once the
-              // email-sending provider is chosen — verbatim from the
-              // source document, which itself left this as a placeholder.
               strong: "pružatelj usluge slanja e-pošte",
-              text: " putem kojeg nam se dostavljaju poruke iz kontakt obrasca: [NAZIV PRUŽATELJA, npr. Resend];",
+              text: " putem kojeg nam se dostavljaju poruke iz kontakt obrasca: Resend;",
             },
             { strong: "knjigovodstveni servis", text: ", u mjeri potrebnoj za ispunjavanje zakonskih obveza." },
           ],
