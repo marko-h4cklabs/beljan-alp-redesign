@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useRef, useState, type FormEvent } from "react";
+import Link from "next/link";
 import { CheckCircle2, ImagePlus, Phone } from "lucide-react";
 import { z } from "zod";
 import { WhatsAppIcon, MessengerIcon } from "@/components/ui/BrandIcons";
@@ -253,6 +254,14 @@ export function Contact() {
               >
                 {status === "pending" ? contactForm.submitPendingLabel : contactForm.submitLabel}
               </button>
+
+              <p className="text-center font-sans text-xs text-ink-soft">
+                {contactForm.consentNotePrefix}
+                <Link href="/politika-privatnosti" className="underline hover:text-forest">
+                  {contactForm.consentNoteLinkLabel}
+                </Link>
+                .
+              </p>
             </form>
           )}
         </Reveal>

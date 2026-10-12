@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { FileDown } from "lucide-react";
 import { Reveal } from "@/components/ui/Reveal";
+import { PrivacyPolicyBody } from "@/components/sections/PrivacyPolicyBody";
 import { privacy } from "@/content/privacy";
 
 export const metadata: Metadata = {
@@ -9,41 +9,40 @@ export const metadata: Metadata = {
 };
 
 export default function PrivacyPolicyPage() {
-  const hasContent = privacy.paragraphs.length > 0;
-
   return (
     <div className="mx-auto max-w-3xl px-5 py-16 sm:px-8 sm:py-20">
       <Reveal>
         <h1 className="font-display text-4xl font-semibold text-forest sm:text-5xl">
           {privacy.heading}
         </h1>
-
-        {hasContent ? (
-          <div className="mt-8 space-y-4 font-sans text-ink-soft">
-            {privacy.paragraphs.map((p) => (
-              <p key={p}>{p}</p>
-            ))}
-          </div>
-        ) : (
-          <div className="mt-8 rounded-card border border-dashed border-sage/40 bg-cream-dark p-6 font-sans text-ink-soft">
-            <p>
-              Sadržaj ove stranice još čeka izvorni dokument politike privatnosti.
-              Ovdje će se prikazati točan tekst, prenesen od riječi do riječi, čim
-              dokument bude dostupan.
-            </p>
-          </div>
-        )}
-
-        <a
-          href={privacy.pdfHref}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-8 inline-flex items-center gap-2 rounded-pill bg-forest px-5 py-2.5 font-sans text-sm font-semibold text-cream shadow-soft transition-transform hover:scale-[1.02]"
-        >
-          <FileDown size={16} aria-hidden="true" />
-          {privacy.pdfDownloadLabel}
-        </a>
+        <p className="mt-3 font-display text-lg font-semibold text-ink">{privacy.companyLine}</p>
+        <span className="mt-2 inline-block font-sans text-xs font-semibold tracking-[0.15em] text-amber uppercase">
+          {privacy.effectiveDate}
+        </span>
+        <p className="mt-6 leading-relaxed text-ink-soft">{privacy.intro}</p>
       </Reveal>
+
+      <Reveal
+        as="div"
+        className="mt-10 rounded-card bg-cream-dark p-5"
+      >
+        <p className="font-sans text-xs font-semibold tracking-[0.15em] text-amber uppercase">
+          Sadržaj
+        </p>
+        <ul className="mt-3 grid gap-x-6 gap-y-1.5 font-sans text-sm sm:grid-cols-2">
+          {privacy.sections.map((s) => (
+            <li key={s.id}>
+              <a href={`#${s.id}`} className="text-ink-soft transition-colors hover:text-forest">
+                {s.number}. {s.heading}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </Reveal>
+
+      <div className="mt-12">
+        <PrivacyPolicyBody sections={privacy.sections} />
+      </div>
     </div>
   );
 }

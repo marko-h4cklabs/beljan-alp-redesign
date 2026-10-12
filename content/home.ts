@@ -183,6 +183,8 @@ export const contactForm = {
   fileHint: "Kliknite za dodavanje slike (max 10MB)",
   submitLabel: "Pošalji Upit",
   submitPendingLabel: "Slanje...",
+  consentNotePrefix: "Slanjem upita prihvaćate ",
+  consentNoteLinkLabel: "Politiku privatnosti",
   // Shown once email sending is actually wired up (step 5); for now the
   // form validates and simulates a successful submission locally.
   successMessage: "Hvala! Vaš upit je zaprimljen, javit ćemo vam se uskoro.",
