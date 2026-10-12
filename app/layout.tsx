@@ -4,9 +4,12 @@ import { fraunces, inter } from "./fonts";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ScrollToAnchor } from "@/components/layout/ScrollToAnchor";
+import { LocalBusinessJsonLd } from "@/components/seo/LocalBusinessJsonLd";
+import { SITE_URL } from "@/lib/siteConfig";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Vrtna oaza Beljan | Rušenje i njega stabala – Međimurje",
     template: "%s | Vrtna oaza Beljan",
@@ -25,6 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             way to do it: components render identical markup on the server
             and the client's first paint either way, so we don't manually
             branch on useReducedMotion() to change *what* renders. */}
+        <LocalBusinessJsonLd />
         <MotionConfig reducedMotion="user">
           <ScrollToAnchor />
           <Header />
