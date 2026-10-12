@@ -14,6 +14,13 @@ const nextConfig: NextConfig = {
     // the Vercel plan/quota is sorted (see chat).
     unoptimized: true,
   },
+  experimental: {
+    serverActions: {
+      // The contact form's optional photo attachment is capped at 10MB in
+      // the UI; default is 1MB. Leaves headroom for multipart overhead.
+      bodySizeLimit: "12mb",
+    },
+  },
 };
 
 export default nextConfig;

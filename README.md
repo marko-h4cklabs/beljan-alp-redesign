@@ -16,6 +16,18 @@ on Vercel. See the Phase 1 plan for the full rationale.
 npm install
 ```
 
+## Environment variables
+
+| Variable | Required for | Notes |
+|---|---|---|
+| `RESEND_API_KEY` | Contact form email sending | From [resend.com](https://resend.com) → API Keys. Without it, the form shows a friendly "not available" error instead of crashing — safe to leave unset locally. |
+| `RESEND_FROM_EMAIL` | Contact form email sending | Optional — defaults to `Vrtna oaza Beljan <upiti@beljan-alp.com>`. Only needs setting if sending from a different address/domain. |
+
+Set these in Vercel under **Project → Settings → Environment Variables**, with both the
+**Preview** and **Production** checkboxes ticked (so it works on preview deployments
+too, not just the live site). For local development, create `.env.local` (already
+gitignored) with the same keys, or run `vercel env pull .env.local`.
+
 ## Development
 
 ```bash

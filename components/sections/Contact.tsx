@@ -1,13 +1,13 @@
 "use client";
 
-import { useId, useRef, useState, type FormEvent } from "react";
+import { useActionState, useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
-import { CheckCircle2, ImagePlus, Phone } from "lucide-react";
-import { z } from "zod";
+import { AlertCircle, CheckCircle2, ImagePlus, Phone } from "lucide-react";
 import { WhatsAppIcon, MessengerIcon } from "@/components/ui/BrandIcons";
 import { Reveal } from "@/components/ui/Reveal";
 import { business } from "@/content/business";
 import { contactForm, contactMethods } from "@/content/home";
+import { submitContactForm, type ContactActionState } from "@/app/actions/contact";
 
 const methodConfig = [
   {
@@ -27,67 +27,64 @@ const methodConfig = [
   },
 ];
 
-const schema = z.object({
-  name: z.string().trim().min(2, contactForm.errors.name),
-  email: z.string().trim().email(contactForm.errors.email),
-  phone: z.string().trim().optional(),
-  message: z.string().trim().min(10, contactForm.errors.message),
-});
-
-type FormErrors = Partial<Record<"name" | "email" | "message" | "file", string>>;
+const initialState: ContactActionState = { status: "idle" };
 
 export function Contact() {
   const formId = useId();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [fileName, setFileName] = useState<string | null>(null);
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [status, setStatus] = useState<"idle" | "pending" | "success">("idle");
+  const [fileError, setFileError] = useState<string | null>(null);
+  // Hidden until mounted (not computed during SSR) so the form can't be
+  // submitted faster than a real person could possibly fill it in — see
+  // app/actions/contact.ts's MIN_FILL_TIME_MS check.
+  const [startedAt, setStartedAt] = useState<number | "">("");
+  const [state, formAction, isPending] = useActionState(submitContactForm, initialState);
+
+  // Inputs below are uncontrolled (defaultValue only), so a new submission
+  // result needs to force-remount the form for its echoed-back `values` to
+  // actually appear — otherwise a failed/errored submission would silently
+  // wipe out whatever the customer typed. Comparing the state reference
+  // during render (not in an effect) is the documented-safe way to derive
+  // this without an extra render pass.
+  const [formKey, setFormKey] = useState(0);
+  const [lastState, setLastState] = useState(state);
+  if (state !== lastState) {
+    setLastState(state);
+    setFormKey((k) => k + 1);
+    // The remounted file input can't be given a value back (browsers don't
+    // allow it), so the displayed filename must reset along with it —
+    // otherwise it would keep showing a filename for a file that's no
+    // longer actually attached.
+    setFileName(null);
+    setFileError(null);
+  }
+
+  useEffect(() => {
+    function sync() {
+      setStartedAt(Date.now());
+    }
+    sync();
+  }, []);
+
+  const fieldErrors = state.status === "invalid" ? state.errors : {};
+  const displayedFileError = fileError ?? fieldErrors.file;
+  const values = state.status === "invalid" || state.status === "error" ? state.values : undefined;
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) {
       setFileName(null);
+      setFileError(null);
       return;
     }
     if (file.size > contactForm.maxFileSizeBytes) {
-      setErrors((prev) => ({ ...prev, file: contactForm.errors.fileTooLarge }));
+      setFileError(contactForm.errors.fileTooLarge);
       e.target.value = "";
       setFileName(null);
       return;
     }
-    setErrors((prev) => ({ ...prev, file: undefined }));
+    setFileError(null);
     setFileName(file.name);
-  }
-
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const data = new FormData(e.currentTarget);
-    const result = schema.safeParse({
-      name: data.get("name"),
-      email: data.get("email"),
-      phone: data.get("phone"),
-      message: data.get("message"),
-    });
-
-    if (!result.success) {
-      const fieldErrors: FormErrors = {};
-      for (const issue of result.error.issues) {
-        const field = issue.path[0] as keyof FormErrors;
-        fieldErrors[field] = issue.message;
-      }
-      setErrors(fieldErrors);
-      return;
-    }
-
-    setErrors({});
-    setStatus("pending");
-    // Actual sending is wired up in step 5 (server action + Resend).
-    // For now, simulate submission so the UI/validation can be reviewed.
-    window.setTimeout(() => {
-      setStatus("success");
-      e.currentTarget.reset();
-      setFileName(null);
-    }, 600);
   }
 
   return (
@@ -131,13 +128,13 @@ export function Contact() {
           </h3>
           <p className="mt-2 font-sans text-ink-soft">{contactForm.intro}</p>
 
-          {status === "success" ? (
+          {state.status === "success" ? (
             <div className="mt-6 flex items-start gap-3 rounded-card bg-forest/10 p-5 text-forest">
               <CheckCircle2 className="mt-0.5 flex-none" size={20} aria-hidden="true" />
               <p className="font-sans text-sm">{contactForm.successMessage}</p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} noValidate className="mt-6 space-y-4">
+            <form key={formKey} action={formAction} noValidate className="mt-6 space-y-4">
               <div>
                 <label htmlFor={`${formId}-name`} className="font-sans text-sm font-medium text-forest">
                   {contactForm.nameLabel}
@@ -146,14 +143,15 @@ export function Contact() {
                   id={`${formId}-name`}
                   name="name"
                   type="text"
+                  defaultValue={values?.name}
                   placeholder={contactForm.namePlaceholder}
                   className="mt-1.5 w-full rounded-lg border border-sage/30 bg-cream px-4 py-2.5 font-sans text-ink placeholder:text-ink-soft/60 focus:border-forest focus:outline-none focus:ring-2 focus:ring-forest/20"
-                  aria-invalid={Boolean(errors.name)}
-                  aria-describedby={errors.name ? `${formId}-name-error` : undefined}
+                  aria-invalid={Boolean(fieldErrors.name)}
+                  aria-describedby={fieldErrors.name ? `${formId}-name-error` : undefined}
                 />
-                {errors.name && (
+                {fieldErrors.name && (
                   <p id={`${formId}-name-error`} className="mt-1 font-sans text-xs text-red-700">
-                    {errors.name}
+                    {fieldErrors.name}
                   </p>
                 )}
               </div>
@@ -166,14 +164,15 @@ export function Contact() {
                   id={`${formId}-email`}
                   name="email"
                   type="email"
+                  defaultValue={values?.email}
                   placeholder={contactForm.emailPlaceholder}
                   className="mt-1.5 w-full rounded-lg border border-sage/30 bg-cream px-4 py-2.5 font-sans text-ink placeholder:text-ink-soft/60 focus:border-forest focus:outline-none focus:ring-2 focus:ring-forest/20"
-                  aria-invalid={Boolean(errors.email)}
-                  aria-describedby={errors.email ? `${formId}-email-error` : undefined}
+                  aria-invalid={Boolean(fieldErrors.email)}
+                  aria-describedby={fieldErrors.email ? `${formId}-email-error` : undefined}
                 />
-                {errors.email && (
+                {fieldErrors.email && (
                   <p id={`${formId}-email-error`} className="mt-1 font-sans text-xs text-red-700">
-                    {errors.email}
+                    {fieldErrors.email}
                   </p>
                 )}
               </div>
@@ -186,6 +185,7 @@ export function Contact() {
                   id={`${formId}-phone`}
                   name="phone"
                   type="tel"
+                  defaultValue={values?.phone}
                   placeholder={contactForm.phonePlaceholder}
                   className="mt-1.5 w-full rounded-lg border border-sage/30 bg-cream px-4 py-2.5 font-sans text-ink placeholder:text-ink-soft/60 focus:border-forest focus:outline-none focus:ring-2 focus:ring-forest/20"
                 />
@@ -199,14 +199,15 @@ export function Contact() {
                   id={`${formId}-message`}
                   name="message"
                   rows={4}
+                  defaultValue={values?.message}
                   placeholder={contactForm.messagePlaceholder}
                   className="mt-1.5 w-full resize-none rounded-lg border border-sage/30 bg-cream px-4 py-2.5 font-sans text-ink placeholder:text-ink-soft/60 focus:border-forest focus:outline-none focus:ring-2 focus:ring-forest/20"
-                  aria-invalid={Boolean(errors.message)}
-                  aria-describedby={errors.message ? `${formId}-message-error` : undefined}
+                  aria-invalid={Boolean(fieldErrors.message)}
+                  aria-describedby={fieldErrors.message ? `${formId}-message-error` : undefined}
                 />
-                {errors.message && (
+                {fieldErrors.message && (
                   <p id={`${formId}-message-error`} className="mt-1 font-sans text-xs text-red-700">
-                    {errors.message}
+                    {fieldErrors.message}
                   </p>
                 )}
               </div>
@@ -226,33 +227,39 @@ export function Contact() {
                 </button>
                 <input
                   ref={fileInputRef}
+                  name="file"
                   type="file"
                   accept="image/*"
                   className="hidden"
                   onChange={handleFileChange}
                 />
-                {errors.file && <p className="mt-1 font-sans text-xs text-red-700">{errors.file}</p>}
+                {displayedFileError && (
+                  <p className="mt-1 font-sans text-xs text-red-700">{displayedFileError}</p>
+                )}
               </div>
 
-              {/* Honeypot + timing fields for step 5's spam protection — not
-                  enforced yet since sending isn't wired up. */}
+              {/* Honeypot (real visitors never fill this, it's hidden via
+                  CSS) + a mount timestamp so the server can reject
+                  impossibly-fast submissions — see app/actions/contact.ts. */}
               <div className="hidden" aria-hidden="true">
                 <label htmlFor={`${formId}-website`}>Website</label>
-                <input
-                  id={`${formId}-website`}
-                  name="website"
-                  type="text"
-                  tabIndex={-1}
-                  autoComplete="off"
-                />
+                <input id={`${formId}-website`} name="website" type="text" tabIndex={-1} autoComplete="off" />
               </div>
+              <input type="hidden" name="startedAt" value={startedAt} />
+
+              {state.status === "error" && (
+                <div className="flex items-start gap-2 rounded-card bg-red-50 p-4 text-red-700">
+                  <AlertCircle size={18} className="mt-0.5 flex-none" aria-hidden="true" />
+                  <p className="font-sans text-sm">{state.message}</p>
+                </div>
+              )}
 
               <button
                 type="submit"
-                disabled={status === "pending"}
+                disabled={isPending}
                 className="w-full rounded-pill bg-forest px-6 py-3 font-sans text-sm font-semibold text-cream shadow-soft transition-transform hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60"
               >
-                {status === "pending" ? contactForm.submitPendingLabel : contactForm.submitLabel}
+                {isPending ? contactForm.submitPendingLabel : contactForm.submitLabel}
               </button>
 
               <p className="text-center font-sans text-xs text-ink-soft">

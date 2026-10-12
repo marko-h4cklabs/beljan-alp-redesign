@@ -195,4 +195,8 @@ export const contactForm = {
     fileTooLarge: "Slika je prevelika (max 10MB).",
   },
   maxFileSizeBytes: 10 * 1024 * 1024,
+  genericErrorMessage: "Došlo je do pogreške prilikom slanja. Pokušajte ponovno ili nas kontaktirajte izravno.",
+  rateLimitedMessage: "Poslali ste previše upita u kratkom vremenu. Pokušajte ponovno za nekoliko minuta.",
+  notConfiguredMessage:
+    "Slanje upita trenutno nije dostupno. Kontaktirajte nas izravno putem telefona ili e-maila.",
 };
